@@ -102,7 +102,7 @@ public class Simulation implements Screen, ContactListener{
 
     Texture[] buildings;
 
-    public float period = 128f;
+    public float period = 16f;
     public float timeSeconds = 0f;
     public int dayCount;
 
@@ -289,6 +289,7 @@ public class Simulation implements Screen, ContactListener{
     }
 
     public void newDay(){
+        //System.out.println("New Day");
         curfews = GameMain.curfewScreen.cases;
         daysBanned = GameMain.curfewScreen.days;
         if(curfews[0]){
@@ -391,7 +392,7 @@ public class Simulation implements Screen, ContactListener{
                 game.getBatch().draw(currentPerson,(currentPerson.getX() - currentPerson.getWidth()/2), (currentPerson.getY() - currentPerson.getHeight()/2));
         }
         game.getBatch().draw(gui, 0, 0);
-
+        //System.out.println("Day: " + dayCount+ " / " + "Infected: " + population.infectedCount + " / " + "Immune: " + population.immuneCount + " / " + "Dead: " + population.deadCount);
         font.draw(game.getBatch(), "Infected: " + population.infectedCount, 90, GameInfo.HEIGHT-35);
         font.draw(game.getBatch(), "Immune: " + population.immuneCount, 460, GameInfo.HEIGHT-35);
         font.draw(game.getBatch(), "Dead: " + population.deadCount, 830, GameInfo.HEIGHT-35);

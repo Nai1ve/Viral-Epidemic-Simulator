@@ -2,6 +2,7 @@ package com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.MyLibgdxTester;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -50,7 +51,11 @@ public class GameMain extends Game{
         Gdx.graphics.setCursor(cursor);
         pixmap.dispose();
         popSound = Gdx.audio.newMusic(Gdx.files.internal("popSound.mp3"));
-        Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+        Graphics.DisplayMode displayMode = Gdx.graphics.getDisplayMode();
+        Gdx.app.log("Screen Width", String.valueOf(displayMode.width));
+        Gdx.app.log("Screen Height", String.valueOf(displayMode.height));
+        //Gdx.graphics.setFullscreenMode(displayMode);
+
         batch = new SpriteBatch();
         GameInfo.create();
         createScreens();

@@ -70,7 +70,7 @@ public class CreditsScreen implements Screen{
         Simulation.musicPlayer();
         //Draws the background
         game.getBatch().begin();
-        game.getBatch().draw(background, 0, 0);
+        game.getBatch().draw(background, 0, 0,GameInfo.WIDTH, GameInfo.HEIGHT);
         game.getBatch().end();
 
         //Draws the names of the buttons on the buttons
