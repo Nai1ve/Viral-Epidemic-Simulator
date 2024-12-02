@@ -1,5 +1,6 @@
 package com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Task;
 
+import com.badlogic.gdx.Gdx;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Person.Person;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Scenes.Simulation;
 
@@ -28,7 +29,7 @@ public class WaitTill implements Task{
 
     @Override
     public void executeTaskOnBody() {
-
+        //Gdx.app.log("【WaitTill】",String.format("Person ID:%d,is In WaitingTill sim.timeSeconds:%f,targetTime%d", person.id,sim.timeSeconds,targetTime));
         person.getBody().setAwake(false);
 
     }

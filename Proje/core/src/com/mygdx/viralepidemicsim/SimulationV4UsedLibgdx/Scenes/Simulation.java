@@ -84,6 +84,9 @@ public class Simulation implements Screen, ContactListener{
     public static int vaccinatedOld = 0;
 
     public boolean isMaskClicked = false;
+
+    double night_threshold = 0.55;
+
     private Texture maskLogo = new Texture("masklogo3.png");
 
     private Texture vacBut = new Texture("vaccbut.jpg");
@@ -358,7 +361,9 @@ public class Simulation implements Screen, ContactListener{
     @Override
     public void render(float delta) {
         //manually looping the music list
+
         musicPlayer();
+        float deltaTime = Gdx.graphics.getDeltaTime();
         if(continueTime.isChecked()){
             timeSeconds +=Gdx.graphics.getDeltaTime();
         }
@@ -380,8 +385,8 @@ public class Simulation implements Screen, ContactListener{
 
         Color c = game.getBatch().getColor();
         renderBuildings();
-        if(timeSeconds/period>0.67){
-            game.getBatch().setColor(c.r, c.g, c.b, (float) (0.6 * ((timeSeconds/period-0.67)*3)));//set alpha to 0.3
+        if(timeSeconds/period> night_threshold){
+            game.getBatch().setColor(c.r, c.g, c.b, (float) (0.6 * ((timeSeconds/period- night_threshold)*3)));//set alpha to 0.3
             game.getBatch().draw(fog, 0, 0, 1920, 1080);
         }
         game.getBatch().setColor(c.r, c.g, c.b, 1f);
@@ -390,6 +395,7 @@ public class Simulation implements Screen, ContactListener{
             currentPerson = population.getPopulation()[i];
             if(!currentPerson.isInBuilding)
                 game.getBatch().draw(currentPerson,(currentPerson.getX() - currentPerson.getWidth()/2), (currentPerson.getY() - currentPerson.getHeight()/2));
+                //fontInfo.draw(game.getBatch(),String.valueOf(currentPerson.id),(currentPerson.getX() - currentPerson.getWidth()/2),(currentPerson.getY() - currentPerson.getHeight()/2) + 20);
         }
         game.getBatch().draw(gui, 0, 0);
         //System.out.println("Day: " + dayCount+ " / " + "Infected: " + population.infectedCount + " / " + "Immune: " + population.immuneCount + " / " + "Dead: " + population.deadCount);
@@ -452,7 +458,7 @@ public class Simulation implements Screen, ContactListener{
         game.getBatch().end();
         debugRenderer.render(world, box2DCamera.combined);
 
-        world.step(Gdx.graphics.getDeltaTime(), 6, 2);
+        world.step(deltaTime, 6, 2);
         box2DCamera.update();
 
         stage.draw();

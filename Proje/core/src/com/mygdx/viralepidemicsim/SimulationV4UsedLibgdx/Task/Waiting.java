@@ -1,5 +1,6 @@
 package com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Task;
 
+import com.badlogic.gdx.Gdx;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Person.Person;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Scenes.Simulation;
 
@@ -37,6 +38,7 @@ public class Waiting implements Task{
      * by setting awake to false this method makes the person wait
      */
     public void executeTaskOnBody() {
+       // Gdx.app.log("【wait】",String.format("Person ID:%d,is In Waiting menu.timeSeconds:%f,firstTime%f,time:%d", person.id,menu.timeSeconds,firstTime,time));
         person.getBody().setAwake(false);
 
     }

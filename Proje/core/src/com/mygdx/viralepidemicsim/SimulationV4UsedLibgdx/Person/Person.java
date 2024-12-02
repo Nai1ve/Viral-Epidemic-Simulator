@@ -2,6 +2,7 @@ package com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Person;
 
 import java.awt.Point;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
@@ -182,7 +183,7 @@ public class Person extends Sprite{
      * Method is mainly responsible for updating health status accordingly.
      * Method checks if person will infect, heal or die. Infection and dying is
      * depends on possibility.
-     * In addition It checks and enforces curfews according to age ranges from the array 
+     * In addition It checks and enforces curfews（宵禁）according to age ranges from the array
      * called curfews and starts a new day for the population. For example, 
      * if it has decided to apply curfew under the age of 18, it applies it to 
      * that age group and starts the new day. 
@@ -237,7 +238,6 @@ public class Person extends Sprite{
         assignRoutine();
         pointer=0;
         currentTask = taskList[0];
-
 
     }
 
@@ -349,6 +349,12 @@ public class Person extends Sprite{
      */
     public void nextTask(){
         pointer++;
+        //避免数组越界
+        if(pointer == 7){
+            pointer = 0;
+        }
+
+
         currentTask = taskList[pointer];
         if(currentTask.toString().equals("W")){
             ((Waiting) currentTask).setFirstTime();

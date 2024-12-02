@@ -30,22 +30,22 @@ public class RandomRoutine implements Routine {
 
         Random rand = new Random();
 
-        taskList[0] = new WaitTill(person,rand.nextInt(25),sim);
+        taskList[0] = new WaitTill(person,rand.nextInt(8),sim);
 
         temp1 = rand.nextInt(31);
 
         taskList[1] = new Moving(person,gm , person.currentLoc , temp1);
 
-        taskList[2] = new Waiting(person, rand.nextInt(15), sim);
+        taskList[2] = new Waiting(person, rand.nextInt(8), sim);
 
         temp2 = rand.nextInt(31);
         taskList[3] = new Moving(person, gm, temp1, temp2);
 
-        taskList[4] = new Waiting(person, rand.nextInt(15), sim);
+        taskList[4] = new Waiting(person, rand.nextInt(8), sim);
 
         taskList[5] = new Moving(person, gm, temp2, person.homeLocation);
 
-        taskList[6] = new WaitTill(person, 130,sim);
+        taskList[6] = new WaitTill(person, 3,sim);
 
 
 
