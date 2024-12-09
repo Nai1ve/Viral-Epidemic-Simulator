@@ -22,6 +22,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Buttons.MainMenuButtons;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Helpers.GameInfo;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.MyLibgdxTester.GameMain;
+import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Helpers.FontLoader; // 引入 FontLoader
 
 public class Parameters implements Screen{
 
@@ -33,6 +34,7 @@ public class Parameters implements Screen{
     private SpriteBatch batch;
     private OrthographicCamera camera;
     private BitmapFont smallFont;
+    private BitmapFont buttonFont; // 添加一个用于按钮的字体
     private ImageButton curfew;
     private SpriteDrawable curfewUp;
     private SpriteDrawable curfewDown; 
@@ -98,6 +100,8 @@ public class Parameters implements Screen{
 
         smallFont = new BitmapFont(Gdx.files.internal("NamesFont.fnt")); 
         smallFont.getData().setScale(0.7f, 0.7f);
+        FontLoader fontLoader = new FontLoader();
+        buttonFont = fontLoader.getChineseFont(); // 使用中文字体创建按钮字体
         camera.position.set(GameInfo.WIDTH/2f, GameInfo.HEIGHT/2f, 0);
 
 
@@ -131,11 +135,11 @@ public class Parameters implements Screen{
         smallFont.draw(batch,"%" + (int) (vaccination.getValue() * 100), vaccination.getX() + vaccination.getWidth() + 15, vaccination.getY() +(vaccination.getHeight()/2) +15);
 
        
-        smallFont.draw(batch, "Initial Patient Number", patientNumber.getX() + 15, patientNumber.getY() + patientNumber.getHeight() +40);
-        smallFont.draw(batch, "Rate of Spread", spreadRate.getX() + 15, spreadRate.getY() + spreadRate.getHeight() +40);
-        smallFont.draw(batch, "Rate of Kill", killRate.getX() + 15, killRate.getY() + killRate.getHeight() +40);
-        smallFont.draw(batch, "Vaccination Rate", vaccination.getX() + 15, vaccination.getY() + vaccination.getHeight() +40);
-        smallFont.draw(batch, "Select From Known Viruses", selectBox.getX() + 15, selectBox.getY() + selectBox.getHeight() +40);
+        buttonFont.draw(batch, "初始感染者数量", patientNumber.getX() + 15, patientNumber.getY() + patientNumber.getHeight() +40);
+        buttonFont.draw(batch, "感染传播率", spreadRate.getX() + 15, spreadRate.getY() + spreadRate.getHeight() +40);
+        buttonFont.draw(batch, "感染死亡率", killRate.getX() + 15, killRate.getY() + killRate.getHeight() +40);
+        buttonFont.draw(batch, "疫苗接种率", vaccination.getX() + 15, vaccination.getY() + vaccination.getHeight() +40);
+        buttonFont.draw(batch, "选择已知病毒", selectBox.getX() + 15, selectBox.getY() + selectBox.getHeight() +40);
 
 
         batch.end();
@@ -249,7 +253,7 @@ public class Parameters implements Screen{
         
     }
     void createButtons() {
-        curfewUp = new SpriteDrawable(new Sprite(new Texture("CurfewButton2.png") ));
+        curfewUp = new SpriteDrawable(new Sprite(new Texture("cn-CurfewButton2.png") ));
         curfewDown = new SpriteDrawable(new Sprite(new Texture("CurfewButtonPressed2.png") ));
         curfew = new ImageButton(curfewUp, curfewDown);
         startUp = new SpriteDrawable(new Sprite(new Texture("StartButton.png")));

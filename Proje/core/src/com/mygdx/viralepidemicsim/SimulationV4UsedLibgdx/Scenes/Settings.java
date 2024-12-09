@@ -20,6 +20,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Helpers.GameInfo;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.MyLibgdxTester.GameMain;
+import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Helpers.FontLoader; // 引入 FontLoader
 
 public class Settings implements Screen{
 
@@ -28,6 +29,7 @@ public class Settings implements Screen{
     private SpriteBatch batch;
     private OrthographicCamera camera;
     private BitmapFont font;
+    private BitmapFont buttonFont; // 添加一个用于按钮的字体
     private BitmapFont musicVolume;
     private BitmapFont sfxVolume;
 
@@ -93,6 +95,8 @@ public class Settings implements Screen{
         font = new BitmapFont(Gdx.files.internal("CreditsFont.fnt"), false);
         musicVolume = new BitmapFont(Gdx.files.internal("NamesFont.fnt")); 
         sfxVolume = new BitmapFont(Gdx.files.internal("NamesFont.fnt")); 
+        FontLoader fontLoader = new FontLoader();
+        buttonFont = fontLoader.getChineseFont(); // 使用中文字体创建按钮字体
 
         camera.position.set(GameInfo.WIDTH/2f, GameInfo.HEIGHT/2f, 0);
     }    
@@ -115,9 +119,9 @@ public class Settings implements Screen{
         //Draws the names of the buttons on the buttons
 
         batch.begin();
-        font.draw(batch, "SETTINGS", GameInfo.WIDTH/3.4f, GameInfo.HEIGHT/1.03f);
-        musicVolume.draw(batch, "Music Volume", GameInfo.WIDTH/2.4f, GameInfo.HEIGHT/2f+4*GameInfo.HEIGHT/20);
-        sfxVolume.draw(batch, "SFX Volume", GameInfo.WIDTH/2.35f, GameInfo.HEIGHT/3.5f+2*GameInfo.HEIGHT/20);
+        buttonFont.draw(batch, "设置", GameInfo.WIDTH/2f, GameInfo.HEIGHT/1.2f);
+        buttonFont.draw(batch, "音乐大小", GameInfo.WIDTH/2.85f, GameInfo.HEIGHT/2.5f+4*GameInfo.HEIGHT/20);
+        buttonFont.draw(batch, "音效大小", GameInfo.WIDTH/2.85f, GameInfo.HEIGHT/5.45f+2*GameInfo.HEIGHT/20);
         
         batch.end();
         

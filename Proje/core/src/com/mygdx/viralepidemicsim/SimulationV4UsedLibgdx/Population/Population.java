@@ -13,6 +13,7 @@ public class Population {
     
     //instantiative variables
     public int infectedCount, immuneCount, deadCount;
+    public int expoCount = 0; //添加的变量，记录感染人数
     public int removedCount = immuneCount + deadCount;
     public int susceptibleCount = GameInfo.population - infectedCount - removedCount;
 
@@ -97,7 +98,15 @@ public class Population {
 
     public void updateCounts(){
         removedCount = immuneCount + deadCount;
-        susceptibleCount = GameInfo.population - infectedCount - removedCount;
+        susceptibleCount = GameInfo.population - infectedCount - removedCount - expoCount;
+        
+        // Update expoCount based on the current state of each person
+        expoCount = 0;
+        for (Person person : population) {
+            if ("Expo".equals(person.healthStatus)) {
+                expoCount++;
+            }
+        }
     }
 
    /**
@@ -211,9 +220,9 @@ public class Population {
      */
     public void startDay(){
         for(int i = 0; i < population.length; i++){
-            
             population[i].startDay();
         }
+        updateCounts(); //确保更新感染人数
     }
 
     /**

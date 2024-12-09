@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Helpers.GameInfo;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.MyLibgdxTester.GameMain;
+import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Helpers.FontLoader; // 引入 FontLoader
 
 public class CreditsScreen implements Screen{
 
@@ -27,8 +28,9 @@ public class CreditsScreen implements Screen{
     private OrthographicCamera camera;
     private BitmapFont fontCredits;
     private BitmapFont fontNames;
+    private BitmapFont nameFont; // 添加一个用于按钮的字体
     private String creditsString;
-    private String faik, tarik, emre, tuna, gun;
+    private String faik, tarik, emre, tuna, gun, captain, member1, member2;
     private GameMain game;
     private Stage stage;
     private Viewport gameViewport;
@@ -41,22 +43,27 @@ public class CreditsScreen implements Screen{
         batch = new SpriteBatch();
         game = main;
         gameViewport = new FitViewport(GameInfo.WIDTH, GameInfo.HEIGHT, new OrthographicCamera());
-        stage = new Stage(gameViewport,game.getBatch());
+        stage = new Stage(gameViewport, game.getBatch());
         camera = new OrthographicCamera(GameInfo.WIDTH, GameInfo.HEIGHT);
         createButtons();
         addAllListeners();
         Gdx.input.setInputProcessor(stage);
 
         stage.addActor(turnBack);
-        background = new Texture("BackgroundMain.jpg");
+        background = new Texture("xingkong.png");
 
-        camera.position.set(GameInfo.WIDTH/2f, GameInfo.HEIGHT/2f, 0);
+        camera.position.set(GameInfo.WIDTH / 2f, GameInfo.HEIGHT / 2f, 0);
         fontCredits = new BitmapFont(Gdx.files.internal("CreditsFont.fnt"));
         fontNames = new BitmapFont(Gdx.files.internal("NamesFont.fnt"));
-        creditsString = "CREDITS";
-        faik = "AHMET FAIK UTKU"; tarik = "AHMET TARIK UCUR"; tuna = "TUNA CUMA"; emre = "EMRE AKGUL"; gun = "GUN TASTAN";
+        FontLoader fontLoader = new FontLoader();
+        nameFont = fontLoader.getChineseFont(); // 使用中文字体创建按钮字体
+        creditsString = "制作团队:";  
+        
+        captain = "刘沛泽";
+        member1 = "王道冲";
+        member2 = "王顺意";
+}
 
-    }
 
     @Override
     public void show() {
@@ -75,12 +82,11 @@ public class CreditsScreen implements Screen{
 
         //Draws the names of the buttons on the buttons
         batch.begin();
-        fontCredits.draw(batch, creditsString, GameInfo.WIDTH/3f, GameInfo.HEIGHT/1.2f);
-        fontNames.draw(batch, faik, GameInfo.WIDTH/2.6f, GameInfo.HEIGHT/2.4f+5*GameInfo.HEIGHT/20);
-        fontNames.draw(batch, tarik, GameInfo.WIDTH/2.7f, GameInfo.HEIGHT/2.4f+4*GameInfo.HEIGHT/20);
-        fontNames.draw(batch, emre, GameInfo.WIDTH/2.37f, GameInfo.HEIGHT/2.4f+3*GameInfo.HEIGHT/20);
-        fontNames.draw(batch, gun, GameInfo.WIDTH/2.4f, GameInfo.HEIGHT/2.4f+2*GameInfo.HEIGHT/20);
-        fontNames.draw(batch, tuna, GameInfo.WIDTH/2.36f, GameInfo.HEIGHT/2.4f+GameInfo.HEIGHT/20);
+        nameFont.draw(batch, creditsString, GameInfo.WIDTH/2.8f, GameInfo.HEIGHT/1.6f);
+        
+        nameFont.draw(batch, captain, GameInfo.WIDTH / 2.5f, GameInfo.HEIGHT / 1.8f - GameInfo.HEIGHT / 20);
+        nameFont.draw(batch, member1, GameInfo.WIDTH / 2.5f, GameInfo.HEIGHT / 1.8f - 2 * GameInfo.HEIGHT / 20);
+        nameFont.draw(batch, member2, GameInfo.WIDTH / 2.5f, GameInfo.HEIGHT / 1.8f - 3 * GameInfo.HEIGHT / 20);
         batch.end();
 
         //Draws the stage and the buttons in it

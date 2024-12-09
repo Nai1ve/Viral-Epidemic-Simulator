@@ -11,12 +11,12 @@ public class GameInfo {
     public final static double ratioOfOld = 13.8;
     
     //instantiative variables
-    public static int WIDTH = 1710;
-    public static int HEIGHT = 1112;
+    public static int WIDTH = 1915;
+    public static int HEIGHT = 1080;
     public static float rateOfSpread = 1;
     public static float rateOfKill = 1; 
     public static int population = 504;
-    public static int initialPatient ;
+    public static int initialPatient;
     public static int numberOfVaccinatedInBegining; 
 
     /**

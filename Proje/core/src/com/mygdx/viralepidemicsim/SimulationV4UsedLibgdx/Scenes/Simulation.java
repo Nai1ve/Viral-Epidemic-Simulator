@@ -29,8 +29,10 @@ import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Helpers.GameInfo;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.MyLibgdxTester.GameMain;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Person.Person;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Population.Population;
+import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Helpers.FontLoader; // 引入 FontLoader
 
 public class Simulation implements Screen, ContactListener{
+    private BitmapFont buttonFont; // 添加一个用于按钮的字体
     private BitmapFont font, newDayFont;
     private GameMain game;
     private Texture bg;
@@ -84,9 +86,6 @@ public class Simulation implements Screen, ContactListener{
     public static int vaccinatedOld = 0;
 
     public boolean isMaskClicked = false;
-
-    double night_threshold = 0.55;
-
     private Texture maskLogo = new Texture("masklogo3.png");
 
     private Texture vacBut = new Texture("vaccbut.jpg");
@@ -123,6 +122,11 @@ public class Simulation implements Screen, ContactListener{
         dayCount = 1;
         font = fontInfo;
         newDayFont = fontInfoNewDay;
+
+        // 实例化 FontLoader 并获取中文字体
+        FontLoader fontLoader = new FontLoader();
+        buttonFont = fontLoader.getChineseFont(); // 使用中文字体创建按钮字体
+
         viewport = new FitViewport(GameInfo.WIDTH, GameInfo.HEIGHT, new OrthographicCamera());
         stage = new Stage(viewport);
         createMusics();
@@ -159,7 +163,7 @@ public class Simulation implements Screen, ContactListener{
         world.setContactListener(this);
 
         bg = new Texture("MapBackground.png");
-        gui = new Texture("SimulationGui.png");
+        gui = new Texture("newSimulationGui.png");
         fog = new Texture("Adsız.png");
 
         abstractMap = new GridMap();
@@ -218,7 +222,7 @@ public class Simulation implements Screen, ContactListener{
     }
 
     private void createButtons() {
-        settings = new ImageButton(new SpriteDrawable(new Sprite(new Texture("SettingsButton.png"))));
+        settings = new ImageButton(new SpriteDrawable(new Sprite(new Texture("cn-SettingsButton.png"))));
         settings.setPosition(GameInfo.WIDTH/2f+200, GameInfo.HEIGHT/2f+460);
     }
 
@@ -350,6 +354,22 @@ public class Simulation implements Screen, ContactListener{
         else if(daysBanned[5] && dayCount%7 == 6){
             population.fullCurfew();
         }
+
+        // 检查感染人数并更新建筑纹理
+        if (population.infectedCount > 50 && population.infectedCount <= 100) {
+            buildings[0] = new Texture("red-0.png"); // 使用红色建筑纹理
+
+        } else if(population.infectedCount > 100){
+            buildings[0] = new Texture("red-0.png");
+            buildings[27] = new Texture("red-27.png");
+            buildings[22] = new Texture("yellow-22.png"); // 使用黄色建筑纹理
+
+        }else{
+            buildings[0] = new Texture("0.png");
+            buildings[27] = new Texture("27.png");
+            buildings[22] = new Texture("22.png");
+        }
+
         population.startDay();
         newDayFont.setColor(newDayFont.getColor().r, newDayFont.getColor().g, newDayFont.getColor().b, 1f);
         temp = 1;
@@ -361,9 +381,7 @@ public class Simulation implements Screen, ContactListener{
     @Override
     public void render(float delta) {
         //manually looping the music list
-
         musicPlayer();
-        float deltaTime = Gdx.graphics.getDeltaTime();
         if(continueTime.isChecked()){
             timeSeconds +=Gdx.graphics.getDeltaTime();
         }
@@ -384,9 +402,11 @@ public class Simulation implements Screen, ContactListener{
         game.getBatch().draw(bg, 0, 0);
 
         Color c = game.getBatch().getColor();
+
+
         renderBuildings();
-        if(timeSeconds/period> night_threshold){
-            game.getBatch().setColor(c.r, c.g, c.b, (float) (0.6 * ((timeSeconds/period- night_threshold)*3)));//set alpha to 0.3
+        if(timeSeconds/period>0.67){
+            game.getBatch().setColor(c.r, c.g, c.b, (float) (0.6 * ((timeSeconds/period-0.67)*3)));//set alpha to 0.3
             game.getBatch().draw(fog, 0, 0, 1920, 1080);
         }
         game.getBatch().setColor(c.r, c.g, c.b, 1f);
@@ -395,46 +415,47 @@ public class Simulation implements Screen, ContactListener{
             currentPerson = population.getPopulation()[i];
             if(!currentPerson.isInBuilding)
                 game.getBatch().draw(currentPerson,(currentPerson.getX() - currentPerson.getWidth()/2), (currentPerson.getY() - currentPerson.getHeight()/2));
-                //fontInfo.draw(game.getBatch(),String.valueOf(currentPerson.id),(currentPerson.getX() - currentPerson.getWidth()/2),(currentPerson.getY() - currentPerson.getHeight()/2) + 20);
         }
         game.getBatch().draw(gui, 0, 0);
         //System.out.println("Day: " + dayCount+ " / " + "Infected: " + population.infectedCount + " / " + "Immune: " + population.immuneCount + " / " + "Dead: " + population.deadCount);
-        font.draw(game.getBatch(), "Infected: " + population.infectedCount, 90, GameInfo.HEIGHT-35);
-        font.draw(game.getBatch(), "Immune: " + population.immuneCount, 460, GameInfo.HEIGHT-35);
-        font.draw(game.getBatch(), "Dead: " + population.deadCount, 830, GameInfo.HEIGHT-35);
+        buttonFont.draw(game.getBatch(), "感染人数:" + population.infectedCount, 10, GameInfo.HEIGHT-29);
+        buttonFont.draw(game.getBatch(), "免疫人数:" + population.immuneCount, 580, GameInfo.HEIGHT-29);
+        
+        buttonFont.draw(game.getBatch(), "死亡人数:" + population.deadCount, 870, GameInfo.HEIGHT-29);
+        buttonFont.draw(game.getBatch(), "密接人数:" + population.expoCount, 290, GameInfo.HEIGHT-29);
         if((int) (int) ((60/(period/16)) * (int) ((timeSeconds)%(period/16))) >= 10) {
             if((int) ((int)(timeSeconds)/(period/16)) + 8 < 10)
-                font.draw(game.getBatch(),"Day: " + (dayCount) + " / 0"  + (int) ((int)(timeSeconds) /(period/16)+ 8) + ":" + (int) ((60/(period/16)) * (int) ((timeSeconds)%(period/16))), GameInfo.WIDTH-400, GameInfo.HEIGHT-35);
+                buttonFont.draw(game.getBatch(),"天数: " + (dayCount) + " / 0"  + (int) ((int)(timeSeconds) /(period/16)+ 8) + ":" + (int) ((60/(period/16)) * (int) ((timeSeconds)%(period/16))), GameInfo.WIDTH-400, GameInfo.HEIGHT-35);
             else
-                font.draw(game.getBatch(),"Day: " + (dayCount) + " / " + (int) ((int)(timeSeconds)/(period/16)+ 8) + ":" + (int) ((60/(period/16)) * (int) ((timeSeconds)%(period/16))), GameInfo.WIDTH-400, GameInfo.HEIGHT-35);
+                buttonFont.draw(game.getBatch(),"天数: " + (dayCount) + " / " + (int) ((int)(timeSeconds)/(period/16)+ 8) + ":" + (int) ((60/(period/16)) * (int) ((timeSeconds)%(period/16))), GameInfo.WIDTH-400, GameInfo.HEIGHT-35);
         }
         else {
             if((int) ((int)(timeSeconds)/(period/16)) + 8 < 10)
-                font.draw(game.getBatch(),"Day: " + (dayCount) + " / 0" + (int) ((int)(timeSeconds)/(period/16)+ 8) + ":0" + (int) ((60/(period/16)) * (int) ((timeSeconds)%(period/16))), GameInfo.WIDTH-400, GameInfo.HEIGHT-35);
+                buttonFont.draw(game.getBatch(),"天数: " + (dayCount) + " / 0" + (int) ((int)(timeSeconds)/(period/16)+ 8) + ":0" + (int) ((60/(period/16)) * (int) ((timeSeconds)%(period/16))), GameInfo.WIDTH-400, GameInfo.HEIGHT-35);
             else
-                font.draw(game.getBatch(),"Day: " + (dayCount) + " / " + (int) ((int)(timeSeconds)/(period/16)+ 8) + ":0" + (int) ((60/(period/16)) * (int) ((timeSeconds)%(period/16))), GameInfo.WIDTH-400, GameInfo.HEIGHT-35);
+                buttonFont.draw(game.getBatch(),"天数: " + (dayCount) + " / " + (int) ((int)(timeSeconds)/(period/16)+ 8) + ":0" + (int) ((60/(period/16)) * (int) ((timeSeconds)%(period/16))), GameInfo.WIDTH-400, GameInfo.HEIGHT-35);
         }
 
         if(dayCount%7 == 0){
-            font.draw(game.getBatch(), "Sunday", 1415, 60);
+            buttonFont.draw(game.getBatch(), "周日", 1415, 60);
         }
         else if(dayCount%7 == 1){
-            font.draw(game.getBatch(), "Monday", 1415, 60);            
+            buttonFont.draw(game.getBatch(), "周一", 1415, 60);            
         }
         else if(dayCount%7 == 2){
-            font.draw(game.getBatch(), "Tuesday", 1415, 60);
+            buttonFont.draw(game.getBatch(), "周二", 1415, 60);
         }
         else if(dayCount%7 == 3){
-            font.draw(game.getBatch(), "Wednesday", 1415, 60);
+            buttonFont.draw(game.getBatch(), "周三", 1415, 60);
         }
         else if(dayCount%7 == 4){
-            font.draw(game.getBatch(), "Thursday", 1415, 60);
+            buttonFont.draw(game.getBatch(), "周四", 1415, 60);
         }
         else if(dayCount%7 == 5){
-            font.draw(game.getBatch(), "Friday", 1415, 60);
+            buttonFont.draw(game.getBatch(), "周五", 1415, 60);
         }
         else if(dayCount%7 == 6){
-            font.draw(game.getBatch(), "Saturday", 1415, 60);
+            buttonFont.draw(game.getBatch(), "周六", 1415, 60);
         }
         if (maskRule){
             game.getBatch().draw(maskLogo,20 , 20);
@@ -458,7 +479,7 @@ public class Simulation implements Screen, ContactListener{
         game.getBatch().end();
         debugRenderer.render(world, box2DCamera.combined);
 
-        world.step(deltaTime, 6, 2);
+        world.step(Gdx.graphics.getDeltaTime(), 6, 2);
         box2DCamera.update();
 
         stage.draw();
@@ -575,8 +596,8 @@ public class Simulation implements Screen, ContactListener{
     }
 
     void addMaskButton(){
-        maskUp = new SpriteDrawable(new Sprite(new Texture("maskbutton.png") ));
-        maskDown = new SpriteDrawable(new Sprite(new Texture("maskbuttonOnClick.png") ));
+        maskUp = new SpriteDrawable(new Sprite(new Texture("cn-maskbutton.png") ));
+        maskDown = new SpriteDrawable(new Sprite(new Texture("cn-maskbuttonOnClick.png") ));
         mask = new ImageButton(maskUp, maskDown);
         mask.setPosition(100,20);
         
@@ -595,8 +616,8 @@ public class Simulation implements Screen, ContactListener{
         
     }
     private void addCurfewButton() {
-        curfewUp = new SpriteDrawable(new Sprite(new Texture("curfewbutton.png") ));
-        curfewDown = new SpriteDrawable(new Sprite(new Texture("curfewbuttonOnClick.png") ));
+        curfewUp = new SpriteDrawable(new Sprite(new Texture("cn-curfewbutton.png") ));
+        curfewDown = new SpriteDrawable(new Sprite(new Texture("cn-curfewbuttonOnClick.png") ));
         curfew = new ImageButton(curfewUp, curfewDown);
         curfew.setPosition(420,20);
         
@@ -628,8 +649,8 @@ public class Simulation implements Screen, ContactListener{
         });
     }
     private void addVaccinationButton() {
-        vaccImage = new SpriteDrawable(new Sprite(new Texture("vaccination.png") ));
-        vaccImageDown = new SpriteDrawable(new Sprite(new Texture("vaccinationdown.png") ));
+        vaccImage = new SpriteDrawable(new Sprite(new Texture("cn-vaccination.png") ));
+        vaccImageDown = new SpriteDrawable(new Sprite(new Texture("cn-vaccinationdown.png") ));
         vaccButton = new ImageButton(vaccImage, vaccImageDown);
         vaccButton.setPosition(800, 20);
         

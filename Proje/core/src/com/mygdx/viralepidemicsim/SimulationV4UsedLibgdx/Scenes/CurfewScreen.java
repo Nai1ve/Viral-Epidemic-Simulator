@@ -19,6 +19,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Helpers.GameInfo;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.MyLibgdxTester.GameMain;
+import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Helpers.FontLoader; // 引入 FontLoader
 
 public class CurfewScreen implements Screen{
 
@@ -27,6 +28,7 @@ public class CurfewScreen implements Screen{
     private SpriteBatch batch;
     private OrthographicCamera camera;
     private BitmapFont smallerFont;
+    private BitmapFont buttonFont; // 添加一个用于按钮的字体
     public static Music nukeSound;
     private Texture buttonTexture = new Texture("MainTitle.png");
     private SpriteDrawable button1 = new SpriteDrawable(new Sprite(new Texture("SecondTitle.png")));
@@ -65,6 +67,8 @@ public class CurfewScreen implements Screen{
         
         background = new Texture("BackgroundMain.jpg");
         smallerFont = new BitmapFont(Gdx.files.internal("InfoFont3.fnt"), false);
+        FontLoader fontLoader = new FontLoader();
+        buttonFont = fontLoader.getChineseFont(); // 使用中文字体创建按钮字体
 
         camera.position.set(GameInfo.WIDTH/2f, GameInfo.HEIGHT/2f, 0);
 
@@ -95,24 +99,24 @@ public class CurfewScreen implements Screen{
         batch.draw(buttonTexture, GameInfo.WIDTH/3f-440, GameInfo.HEIGHT/1.2f-85);
         batch.draw(buttonTexture, GameInfo.WIDTH/2f-30, GameInfo.HEIGHT/1.2f-85);
 
-        smallerFont.draw(batch, "SPECIFY DAYS", GameInfo.WIDTH/3f-200, GameInfo.HEIGHT/1.2f);
+        buttonFont.draw(batch, "指定日期", GameInfo.WIDTH/3f-100, GameInfo.HEIGHT/1.2f);
 
-        smallerFont.draw(batch, "   Monday   ", GameInfo.WIDTH/3f-200, GameInfo.HEIGHT/1.2f-100);
-        smallerFont.draw(batch, "  Tuesday   ", GameInfo.WIDTH/3f-200+9, GameInfo.HEIGHT/1.2f-200);
-        smallerFont.draw(batch, " Wednesday  ", GameInfo.WIDTH/3f-200, GameInfo.HEIGHT/1.2f-300);
-        smallerFont.draw(batch, "  Thursday  ", GameInfo.WIDTH/3f-200, GameInfo.HEIGHT/1.2f-400);
-        smallerFont.draw(batch, "    Friday   ", GameInfo.WIDTH/3f-200, GameInfo.HEIGHT/1.2f-500);
-        smallerFont.draw(batch, "  Saturday  ", GameInfo.WIDTH/3f-200, GameInfo.HEIGHT/1.2f-600);
-        smallerFont.draw(batch, "   Sunday   ", GameInfo.WIDTH/3f-200, GameInfo.HEIGHT/1.2f-700);
+        buttonFont.draw(batch, "   周 一   ", GameInfo.WIDTH/3f-115, GameInfo.HEIGHT/1.2f-100);
+        buttonFont.draw(batch, "   周 二   ", GameInfo.WIDTH/3f-115, GameInfo.HEIGHT/1.2f-200);
+        buttonFont.draw(batch, "   周 三   ", GameInfo.WIDTH/3f-115, GameInfo.HEIGHT/1.2f-300);
+        buttonFont.draw(batch, "   周 四   ", GameInfo.WIDTH/3f-115, GameInfo.HEIGHT/1.2f-400);
+        buttonFont.draw(batch, "   周 五   ", GameInfo.WIDTH/3f-115, GameInfo.HEIGHT/1.2f-500);
+        buttonFont.draw(batch, "   周 六   ", GameInfo.WIDTH/3f-115, GameInfo.HEIGHT/1.2f-600);
+        buttonFont.draw(batch, "   周 日   ", GameInfo.WIDTH/3f-115, GameInfo.HEIGHT/1.2f-700);
 
-        smallerFont.draw(batch, "     SPECIFY CASES     ", GameInfo.WIDTH/2f+100, GameInfo.HEIGHT/1.2f);
+        buttonFont.draw(batch, "   指定范围     ", GameInfo.WIDTH/2f+150, GameInfo.HEIGHT/1.2f);
 
-        smallerFont.draw(batch, " Curfew for ages 0 - 18", GameInfo.WIDTH/2f+100-5, GameInfo.HEIGHT/1.2f-100);
-        smallerFont.draw(batch, "Curfew for ages 19 - 39", GameInfo.WIDTH/2f+100, GameInfo.HEIGHT/1.2f-200);
-        smallerFont.draw(batch, "Curfew for ages 40 - 65", GameInfo.WIDTH/2f+100, GameInfo.HEIGHT/1.2f-300);
-        smallerFont.draw(batch, "  Curfew for ages 66+  ", GameInfo.WIDTH/2f+100, GameInfo.HEIGHT/1.2f-400);
-        smallerFont.draw(batch, "      Close schools    ", GameInfo.WIDTH/2f+100-10, GameInfo.HEIGHT/1.2f-500);
-        smallerFont.draw(batch, "    Close workplaces   ", GameInfo.WIDTH/2f+100-10, GameInfo.HEIGHT/1.2f-600);
+        buttonFont.draw(batch, "年龄在0-18岁的", GameInfo.WIDTH/2f+180, GameInfo.HEIGHT/1.2f-100);
+        buttonFont.draw(batch, "年龄在19-39岁的", GameInfo.WIDTH/2f+180, GameInfo.HEIGHT/1.2f-200);
+        buttonFont.draw(batch, "年龄在40-65岁的", GameInfo.WIDTH/2f+180, GameInfo.HEIGHT/1.2f-300);
+        buttonFont.draw(batch, "年龄在65岁以上的", GameInfo.WIDTH/2f+180, GameInfo.HEIGHT/1.2f-400);
+        buttonFont.draw(batch, "关闭学校", GameInfo.WIDTH/2f+230, GameInfo.HEIGHT/1.2f-500);
+        buttonFont.draw(batch, "关闭工作场所", GameInfo.WIDTH/2f+200, GameInfo.HEIGHT/1.2f-600);
 
         batch.end();
     }

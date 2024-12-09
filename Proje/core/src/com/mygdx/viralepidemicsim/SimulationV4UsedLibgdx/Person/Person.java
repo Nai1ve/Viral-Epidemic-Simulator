@@ -2,7 +2,6 @@ package com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Person;
 
 import java.awt.Point;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
@@ -176,6 +175,7 @@ public class Person extends Sprite{
      */
     public void getExposed() {
         this.healthStatus = "Expo";
+        menu.population.updateCounts();//确保更新了密接人数
     }
 
     /**
@@ -183,7 +183,7 @@ public class Person extends Sprite{
      * Method is mainly responsible for updating health status accordingly.
      * Method checks if person will infect, heal or die. Infection and dying is
      * depends on possibility.
-     * In addition It checks and enforces curfews（宵禁）according to age ranges from the array
+     * In addition It checks and enforces curfews according to age ranges from the array 
      * called curfews and starts a new day for the population. For example, 
      * if it has decided to apply curfew under the age of 18, it applies it to 
      * that age group and starts the new day. 
@@ -193,7 +193,10 @@ public class Person extends Sprite{
     public void startDay(){
         if (menu.dayCount == healDay) {
             getImmune();
-            Simulation.population.infectedCount--;
+            // 确保 infectedCount 不会低于 0
+            if (Simulation.population.infectedCount > 0) {
+                Simulation.population.infectedCount--;
+            }
         }
         Object[] userData = (Object[])fixture.getUserData();
         healthStatus = (String)((userData)[0]);
@@ -211,6 +214,7 @@ public class Person extends Sprite{
         else if(healthStatus.equals("Expo")){
             
             double possiblity = 100;
+
 
             boolean isInfected = false;
             for(int i = 0; i < (int)userData[2]; i++){
@@ -238,6 +242,7 @@ public class Person extends Sprite{
         assignRoutine();
         pointer=0;
         currentTask = taskList[0];
+
 
     }
 
@@ -349,12 +354,6 @@ public class Person extends Sprite{
      */
     public void nextTask(){
         pointer++;
-        //避免数组越界
-        if(pointer == 7){
-            pointer = 0;
-        }
-
-
         currentTask = taskList[pointer];
         if(currentTask.toString().equals("W")){
             ((Waiting) currentTask).setFirstTime();
@@ -503,6 +502,7 @@ public class Person extends Sprite{
 
 
         Simulation.population.infectedCount++;
+        menu.population.updateCounts();//确保更新了感染人数
 
 
     }
@@ -525,6 +525,7 @@ public class Person extends Sprite{
 
 
             Simulation.population.immuneCount++;
+            menu.population.updateCounts();//确保更新了免疫人数
         }
 
     }
