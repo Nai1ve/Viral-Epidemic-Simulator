@@ -2,6 +2,7 @@ package com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.AbstractMap;
 import java.awt.Point;
 import java.util.Arrays;
 
+import com.badlogic.gdx.Gdx;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Building.Building;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Helpers.GameInfo;
 
@@ -21,6 +22,7 @@ public class GridMap {
             vertices[i].y -= 90;
             vertices[i].x += 45;
         }
+
     }
 
     public GridMap(int[][] arr){

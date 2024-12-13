@@ -31,6 +31,11 @@ import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Person.Person;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Population.Population;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Helpers.FontLoader; // 引入 FontLoader
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class Simulation implements Screen, ContactListener{
     private BitmapFont buttonFont; // 添加一个用于按钮的字体
     private BitmapFont font, newDayFont;
@@ -108,6 +113,8 @@ public class Simulation implements Screen, ContactListener{
     public float timeSeconds = 0f;
     public int dayCount;
 
+    public Map<String, List> statisticalInfo;
+
     public boolean closeSchool;
     public boolean curfewUnder18;
     public boolean curfewOver65;
@@ -116,6 +123,14 @@ public class Simulation implements Screen, ContactListener{
 
     public boolean[] curfews;
     public boolean[] daysBanned;
+
+
+    boolean isOpenIsolation = false;
+    boolean lastIsolationVersion = false;
+    boolean isComprehensiveIsolation = false;
+    boolean lastCIsolationVersionVersion = false;
+    boolean isCloseIsolation = false;
+    boolean lastIsCloseIsolation = false;
 
     public Simulation(GameMain game){
         this.game = game;
@@ -175,6 +190,16 @@ public class Simulation implements Screen, ContactListener{
         debugRenderer.setDrawInactiveBodies(false);
         curfews = new boolean[6];
         daysBanned = new boolean[7];
+
+        statisticalInfo = new HashMap<>();
+        statisticalInfo.put("normal",new ArrayList<>());
+        statisticalInfo.put("close_contact",new ArrayList<>());
+        statisticalInfo.put("infected",new ArrayList<>());
+        statisticalInfo.put("policy",new ArrayList<String[]>());
+        statisticalInfo.get("normal").add(population.getNormalCount());
+        statisticalInfo.get("close_contact").add(population.getCloseContact());
+        statisticalInfo.get("infected").add(population.getInfectedCount());
+
     }
 
     private void addTimeButtons() {
@@ -355,25 +380,63 @@ public class Simulation implements Screen, ContactListener{
             population.fullCurfew();
         }
 
+
         // 检查感染人数并更新建筑纹理
         if (population.infectedCount > 50 && population.infectedCount <= 100) {
             buildings[0] = new Texture("red-0.png"); // 使用红色建筑纹理
-
+            isOpenIsolation = true;
+            lastCIsolationVersionVersion =false;
         } else if(population.infectedCount > 100){
             buildings[0] = new Texture("red-0.png");
             buildings[27] = new Texture("red-27.png");
             buildings[22] = new Texture("yellow-22.png"); // 使用黄色建筑纹理
+            isComprehensiveIsolation = true;
+            lastCIsolationVersionVersion = false;
+        }else if(isOpenIsolation || isComprehensiveIsolation){
+            buildings[0] = new Texture("0.png");
+            buildings[27] = new Texture("27.png");
+            buildings[22] = new Texture("22.png");
+            isCloseIsolation = true;
 
-        }else{
+            isOpenIsolation = false;
+            lastIsolationVersion =false;
+
+            isComprehensiveIsolation = false;
+            lastCIsolationVersionVersion = false;
+        }else {
             buildings[0] = new Texture("0.png");
             buildings[27] = new Texture("27.png");
             buildings[22] = new Texture("22.png");
         }
 
         population.startDay();
+        statisticalInfo.get("normal").add(population.getNormalCount());
+        statisticalInfo.get("close_contact").add(population.getCloseContact());
+        statisticalInfo.get("infected").add(population.getInfectedCount());
         newDayFont.setColor(newDayFont.getColor().r, newDayFont.getColor().g, newDayFont.getColor().b, 1f);
         temp = 1;
         newDaySound.play();
+
+        if (isOpenIsolation && !lastIsolationVersion){
+            // 开启了隔离
+            List<String[]> policy = statisticalInfo.get("policy");
+            policy.add(new String[]{"isolation", String.valueOf(dayCount)});
+        }
+
+        if (isComprehensiveIsolation && !lastCIsolationVersionVersion){
+            List<String[]> policy = statisticalInfo.get("policy");
+            policy.add(new String[]{"comprehensiveIsolation", String.valueOf(dayCount)});
+        }
+
+        if (isCloseIsolation && !lastIsCloseIsolation) {
+            List<String[]> policy = statisticalInfo.get("policy");
+            policy.add(new String[]{"endIsolation", String.valueOf(dayCount)});
+        }
+
+        lastIsolationVersion = isOpenIsolation;
+        lastCIsolationVersionVersion = isComprehensiveIsolation;
+        lastIsCloseIsolation = isCloseIsolation;
+
     }
 
     @Override
@@ -422,7 +485,7 @@ public class Simulation implements Screen, ContactListener{
         buttonFont.draw(game.getBatch(), "免疫人数:" + population.immuneCount, 580, GameInfo.HEIGHT-29);
         
         buttonFont.draw(game.getBatch(), "死亡人数:" + population.deadCount, 870, GameInfo.HEIGHT-29);
-        buttonFont.draw(game.getBatch(), "密接人数:" + population.expoCount, 290, GameInfo.HEIGHT-29);
+        buttonFont.draw(game.getBatch(), "密接人数:" + population.getCloseContact(), 290, GameInfo.HEIGHT-29);
         if((int) (int) ((60/(period/16)) * (int) ((timeSeconds)%(period/16))) >= 10) {
             if((int) ((int)(timeSeconds)/(period/16)) + 8 < 10)
                 buttonFont.draw(game.getBatch(),"天数: " + (dayCount) + " / 0"  + (int) ((int)(timeSeconds) /(period/16)+ 8) + ":" + (int) ((60/(period/16)) * (int) ((timeSeconds)%(period/16))), GameInfo.WIDTH-400, GameInfo.HEIGHT-35);
@@ -606,9 +669,13 @@ public class Simulation implements Screen, ContactListener{
             public void changed(ChangeEvent event, Actor actor) {                
                 if (!maskRule){
                     maskRule =true;
+                    List<String[]> policy = statisticalInfo.get("policy");
+                    policy.add(new String[]{"WearMask", String.valueOf(dayCount)});
                 }
                 else{
                     maskRule =false;
+                    List<String[]> policy = statisticalInfo.get("policy");
+                    policy.add(new String[]{"TakeOffMask", String.valueOf(dayCount)});
                 }
                 
             }

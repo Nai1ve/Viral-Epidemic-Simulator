@@ -35,7 +35,7 @@ public class InfectedRoutine implements Routine{
 
         taskList[3] = new Moving(person, gm, 0, person.homeLocation);
 
-        taskList[4] = new WaitTill(person, 130, sim);
+        taskList[4] = new WaitTill(person, 18, sim);
         
 
     }

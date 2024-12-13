@@ -1,7 +1,9 @@
 package com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Person;
 
 import java.awt.Point;
+import java.util.Arrays;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
@@ -48,6 +50,8 @@ public class Person extends Sprite{
     public Task currentTask;
 
     Task[] taskList;
+
+    int taskSize = 7;
 
     public int currentLoc;
 
@@ -118,7 +122,7 @@ public class Person extends Sprite{
 
 
 
-        startDay();
+        init();
 
     
     }
@@ -175,7 +179,7 @@ public class Person extends Sprite{
      */
     public void getExposed() {
         this.healthStatus = "Expo";
-        menu.population.updateCounts();//确保更新了密接人数
+        //Simulation.population.expoCount++;
     }
 
     /**
@@ -220,6 +224,7 @@ public class Person extends Sprite{
             for(int i = 0; i < (int)userData[2]; i++){
                 if(GameInfo.trueWithPossibility((int)possiblity) ){
                     getInfected();
+                    //Simulation.population.expoCount--;
                     isInfected = true;
                     break;
                 }
@@ -227,6 +232,7 @@ public class Person extends Sprite{
 
             if(!isInfected){
                 userData[0] = "Susp";
+                //Simulation.population.expoCount--;
                 userData[2] = 0;
             }
             
@@ -238,12 +244,69 @@ public class Person extends Sprite{
         
         
         
+        //currentLoc = homeLocation;
+        //assignRoutine();
+        //pointer=0;
+        //currentTask = taskList[0];
+
+
+    }
+
+
+    public void init(){
+        if (menu.dayCount == healDay) {
+            getImmune();
+            // 确保 infectedCount 不会低于 0
+            if (Simulation.population.infectedCount > 0) {
+                Simulation.population.infectedCount--;
+            }
+        }
+        Object[] userData = (Object[])fixture.getUserData();
+        healthStatus = (String)((userData)[0]);
+
+        if(healthStatus.equals("Infe")){
+
+            double possiblity = 100 * GameInfo.rateOfKill * dieCoefficient;
+
+
+            if(GameInfo.randomBetween(0, 100) < possiblity && menu.dayCount > 0){
+                die();
+            }
+
+        }
+        else if(healthStatus.equals("Expo")){
+
+            double possiblity = 100;
+
+
+            boolean isInfected = false;
+            for(int i = 0; i < (int)userData[2]; i++){
+                if(GameInfo.trueWithPossibility((int)possiblity) ){
+                    getInfected();
+                    //Simulation.population.expoCount--;
+                    isInfected = true;
+                    break;
+                }
+            }
+
+            if(!isInfected){
+                userData[0] = "Susp";
+                //Simulation.population.expoCount--;
+                userData[2] = 0;
+            }
+
+            updateHealthCondition();
+
+            fixture.setUserData(userData);
+
+        }
+
+
+
         currentLoc = homeLocation;
         assignRoutine();
         pointer=0;
         currentTask = taskList[0];
-
-
     }
 
 
@@ -260,41 +323,53 @@ public class Person extends Sprite{
      * Curfew routine : If person is not infected and there is a curfew going on this routine will be assigned.
      */
     private void assignRoutine() {
+        if (id %100 == 0){
+            Gdx.app.log("log",id + "分配规则"+this.toString());
+        }
         Object[] userData = (Object[])fixture.getUserData();
         healthStatus = (String)((userData)[0]);
 
         if(healthStatus.equals("Infe")){
             routine = new InfectedRoutine(this, menu, map);
             taskList =  ((InfectedRoutine)routine).taskList;
+            taskSize = 5;
         }
         else if(isInCurfew){
             routine = new CurfewRoutine(this, menu, map);
             taskList =  ((CurfewRoutine)routine).taskList;
+            taskSize = 2;
         }
         else{
             if(this.type.equals("Young")) {
                 routine = new YoungRoutine(this, menu, map);
                 taskList = ((YoungRoutine)routine).taskList;
+                taskSize = 7;
             }
             else if (this.type.equals("Young Adult")) {
                 routine = new YoungAdultRoutine(this, menu, map);
                 taskList = ((YoungAdultRoutine)routine).taskList;
+                taskSize = 7;
             }
             else if (this.type.equals("Adult")) {
                 routine = new AdultRoutine(this, menu, map);
                 taskList = ((AdultRoutine)routine).taskList;
+                taskSize = 7;
             }
             else if (this.type.equals("Old")) {
                 routine = new OldRoutine(this, menu, map);
                 taskList = ((OldRoutine)routine).taskList;
+                taskSize = 7;
             }
             else {
                 routine = new RandomRoutine(this, menu, map);
                 taskList = ((RandomRoutine)routine).taskList;
+                taskSize = 7;
             }
         }
-
-        
+        if (id %100 == 0){
+            Gdx.app.log("log",id + "完成分配规则"+this.toString());
+        }
+        //pointer =0;
     }
 
     /**
@@ -354,6 +429,10 @@ public class Person extends Sprite{
      */
     public void nextTask(){
         pointer++;
+        pointer = pointer % taskSize;
+        if (pointer == 0){
+            assignRoutine();
+        }
         currentTask = taskList[pointer];
         if(currentTask.toString().equals("W")){
             ((Waiting) currentTask).setFirstTime();
@@ -502,9 +581,6 @@ public class Person extends Sprite{
 
 
         Simulation.population.infectedCount++;
-        menu.population.updateCounts();//确保更新了感染人数
-
-
     }
     
 
@@ -525,7 +601,6 @@ public class Person extends Sprite{
 
 
             Simulation.population.immuneCount++;
-            menu.population.updateCounts();//确保更新了免疫人数
         }
 
     }
@@ -576,6 +651,18 @@ public class Person extends Sprite{
         Simulation.population.deadCount++;
         Simulation.population.infectedCount--;
     }
-       
-   
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "id=" + id +
+                ", healDay=" + healDay +
+                ", currentTask=" + currentTask +
+                ", taskList=" + Arrays.toString(taskList) +
+                ", currentLoc=" + currentLoc +
+                ", pointer=" + pointer +
+                ", homeLocation=" + homeLocation +
+                ", workLoc=" + workLoc +
+                '}';
+    }
 }

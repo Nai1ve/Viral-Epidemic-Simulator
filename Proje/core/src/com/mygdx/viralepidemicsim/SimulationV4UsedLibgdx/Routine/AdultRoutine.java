@@ -44,15 +44,15 @@ public class AdultRoutine implements Routine{
 
         taskList[1] = new Moving(person,gm , person.currentLoc , temp1);
 
-        taskList[2] = new Waiting(person, rand.nextInt(8), sim);
+        taskList[2] = new Waiting(person, 8, sim);
 
         temp2 = buildingList[rand.nextInt(buildingList.length)];
         taskList[3] = new Moving(person, gm, temp1, temp2);
 
-        taskList[4] = new Waiting(person, rand.nextInt(8), sim);
+        taskList[4] = new Waiting(person, 8, sim);
 
         taskList[5] = new Moving(person, gm, temp2, person.homeLocation);
 
-        taskList[6] = new WaitTill(person, 3,sim);
+        taskList[6] = new WaitTill(person, 2,sim);
     }
 }

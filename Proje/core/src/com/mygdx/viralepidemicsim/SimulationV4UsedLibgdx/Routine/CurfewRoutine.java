@@ -20,9 +20,9 @@ public class CurfewRoutine implements Routine{
 
         taskList = new Task[2];
 
-        taskList[0] = new WaitTill(person,200, menu);
-
-        taskList[1] = new WaitTill(person, 150, menu);
+        taskList[0] = new WaitTill(person,10, menu);
+        // 执行宵禁后，只在所处范围内活动
+        taskList[1] = new WaitTill(person, 10, menu);
 
 
     }

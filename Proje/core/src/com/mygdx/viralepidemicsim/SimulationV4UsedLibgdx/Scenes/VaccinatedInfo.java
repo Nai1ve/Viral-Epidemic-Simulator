@@ -79,7 +79,6 @@ public class VaccinatedInfo implements Screen{
         game.getBatch().begin();
         game.getBatch().draw(background, 0, 0);
         game.getBatch().end();
-
         Simulation.population.updateCounts();
 
         //Draws the names of the buttons on the buttons
