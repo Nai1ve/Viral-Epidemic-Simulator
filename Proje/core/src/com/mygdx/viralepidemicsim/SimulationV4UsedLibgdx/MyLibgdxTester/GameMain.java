@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Buttons.MainMenuButtons;
-import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Chart.LineChart;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Helpers.GameInfo;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Scenes.CreditsScreen;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Scenes.CurfewScreen;
@@ -19,21 +18,12 @@ import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Scenes.VaccinatedInfo;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Scenes.MainMenu;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Scenes.Parameters;
 import com.mygdx.viralepidemicsim.SimulationV4UsedLibgdx.Scenes.Settings;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.ChartUtils;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.DateAxis;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.data.time.Day;
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.data.xy.XYDataset;
 
 
-import javax.swing.*;
+
+
 import java.io.*;
-import java.text.SimpleDateFormat;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -191,24 +181,6 @@ public class GameMain extends Game{
         }
     }
 
-    public static XYDataset createDataset(Date[] dates, int[] normalCounts, int[] closeContactCounts, int[] infectedCounts) {
-        TimeSeries normalSeries = new TimeSeries("正常人数");
-        TimeSeries closeContactSeries = new TimeSeries("密接人数");
-        TimeSeries infectedSeries = new TimeSeries("感染人数");
-
-        for (int i = 0; i < dates.length; i++) {
-            normalSeries.add(new Day(dates[i]), normalCounts[i]);
-            closeContactSeries.add(new Day(dates[i]), closeContactCounts[i]);
-            infectedSeries.add(new Day(dates[i]), infectedCounts[i]);
-        }
-
-        TimeSeriesCollection dataset = new TimeSeriesCollection();
-        dataset.addSeries(normalSeries);
-        dataset.addSeries(closeContactSeries);
-        dataset.addSeries(infectedSeries);
-
-        return dataset;
-    }
 
 
 }
